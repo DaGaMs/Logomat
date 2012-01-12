@@ -1,0 +1,81 @@
+Revision history for Perl extension HMM.
+
+0.01  Thd Jul 17 17:54:00 2003
+	- Initial alpha release; Just one test up to now, very basic Font-DIR setting
+	- Methods for reading out Profile HMMs and producing HMM-Logos
+0.02  Fri Jul 25 15:42:00 2003
+	- Fix: Better positioning of characters in draw_logo()
+0.03  Fri Aug 1 19:31:00 2003
+	- Change: Threshold for character display set to 1 instead of 3 for accuracy
+	- Added option to display parts of a profile through -startpos -endpos
+0.04  Mon, Aug 4 16:40:00 2003
+	- Modified character positioning again - Now it should finally be as good as it gets
+	- Fixed errors in partial display
+0.1   Fri, Aug 15 13:33:00 2003
+	- We think it is time for a first release!
+	- The parse and simple read functionality has been passed to HMM rather than HMM::Profile
+	- Thus, HMM::Profile now inherits from HMM
+	- Thus, HMM is not an exporter class any more, so HMM::Profile has to be included explicitly
+0.2   Thd, Aug 21 11:23:00 2003
+	- Added PFAM direct download support. Thus, libbwww-perl is required now
+	- Tried to reduce startup-time by usinf PDL::LiteF rather than PDL
+	- Changed the parser to work with strings instead of globs
+0.2.1 Tue, Aug 26 14:16:00 2003
+	- Added experimental retention-time calculation for insert states
+0.3   Fri, Aug 29 12:47:00 2003
+	- Modified retention-time calculation. HP is now a sub-column of Insert-States where width is determined by HP*Est.Ret.Time
+	- ATTENTION: toWidth is now toHPM and returns a Matrix of all Hitting Probabilities rather than a vector for M and I
+0.31  Thd Okt 30 15:24:00 2003
+	- Fixed a bug concerning Windows line-breaks
+0.32  Thd Nov 20 19:29:00 2003
+	- Workaround fixing a bug in the getter for pfam entries
+0.4   Thd Nov 20 22:50:00 2003
+	- Added option to create greyscaled logos
+0.5   Tue, Jan 20 15:20:00 2004
+	- Added more methods to access scores instead of probabilites in HMM
+0.5.1 Fri, May 14 11:43:00 2004
+	- Modified package to work with Imager-0.4.3. Note that 0.5 and 0.5.1 are incompatible!
+	- Fixed a bug concerning ignoration of small characters
+	- Removed lot's of annoying warnings
+0.6   Thd Jan 27 13:56:00 2005
+    - Added the Alignment.pm class. This is a major amendment, so beware of problems!
+    - Changed the methods in HMM.pm to be lvaluable. Now HMMs can be modified
+    - Added a method toHMMer that allows writing a HMMer file representing an HMM object
+    - Minor changes to the Makefile
+0.6.1 Thd Feb 3 13:59:00 2005
+    - Fixed a bug that resulted in faulty glyph width
+0.6.2 Mon Feb 7 16:53:00 2005
+    - Added some warning during file-parsing
+    - Enabled greyscaling
+    - Changed execution of prc from 'exec' to open("... |") because of reported problems
+    - Changed greyscale letter colouring to show hydrophobicity/acidity only
+0.6.3 Thd Mar 3 14:25:00 2005
+    - Fixed bug that caused crash when last aligned char was D
+0.7   Mon Mar 7 16:11:00 2005
+    - Changed the alignment style to solid blocks instead of centred lines
+0.7.1 Wed Mar 9 11:15:00 2005
+    - Added the possibility to pass IO::File objects instead of Filehandles or GLOBs
+0.7.2 Fri Jan 6 13:53:00 2006
+    - Fixed several parsing errors with different build settings for HMMer
+0.7.3 Mon Jan 9 13:14:00 2006
+    - Changed Alignment.pm to remove trailing gaps from prc alignments
+0.7.4 Wed Nov 9 11:07:00 2006
+    - Now takes custom font path, size and colouring
+    - Removed font path check from Makefile
+    - Bug fixed: Exporter not working
+0.7.5 Mon Nov 20 13:21:00 2006
+    - Emission and transition matrices can now be passed manually at creation time
+0.7.6 Fri Aug 24 14:07:00 2007
+    - Added methods to parse and retrieve the state-to-column mapping provided in the HMMer files
+0.7.7 Fri Oct 25 14:03:00 2007
+    - Fixed several errors in Alignment.pm which accidentally slipped through
+    - Synchronised Alignment.pm with the version on the Pfam servers
+0.7.8 Thu Aug 21 11:18:00 2008
+    - Changed the URL in HMM.pm to connect to the new Pfam website correctly
+0.8   Fri Apr 24 11:40:00 2009
+    - Now also parses HMMER3 format files and creates logos from them. There are some
+      issues related to changes in the Profile structure in HMMER3 which have not yet been resolved
+    - Added tests for the parsers; More tests should be made
+    - Cleaned up the code a little bit
+0.81  Tue Sep 20 16:26:00 2011
+	- added method to dump raw perl arrays for logo data, in preparation for a JSON version

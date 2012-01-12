@@ -1,0 +1,29 @@
+SUMMARY
+
+HMM is a package for working with (profile) HMMs. These often occur in computational biology. It includes methods for parsing HMMer files and representing them in an object oriented way. For further information about the methods see the includeded pod-documentation.
+
+
+INSTALLATION
+
+You need a number of libraries to use the HMM package: Most importantly, you need PDL, the Perl Data Language in a version equal to or above 2.3.4. You can download PDL from CPAN or http://pdl.perl.org. Please make sure you compile PDL with "BAD VALUE SUPPORT" switched on! This is necessary for dealing with log(0) values.
+Secondly, you'll need to download the Imager module from CPAN. We tested the
+0.4.3 and 0.4.4 versions successfully. Include them with FreeType2 support for creating Logos. Otherwise glyph distortions are unavailable, rendering all Logos useless.
+
+After you installed all libraries, you simply do:
+
+perl Makefile.PL
+make
+(make test) # Only 1 test is currently run, i.e. check if Module loads...
+make install
+
+You need to provide a path where HMM can find the Arial truetype font-set! This is needed for the draw_logo methods to work.
+
+
+AUTHOR
+
+For questions or comments contact bsb(at)sanger.ac.uk or bendaboots(at)gmx.de.
+
+
+LICENSE
+
+This software is released under the same conditions as Perl itself.
