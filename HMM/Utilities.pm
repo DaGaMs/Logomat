@@ -72,6 +72,7 @@ sub sreLOG2 {        #Log base 2 as used in HMMer
 sub toICM{
     my $prob = shift;
     my $nul_model = shift;
+    my $height_logodds = shift; # boolean.  If 0, then use emission probability for height (which was the default) ,  TJW
     
     my $xsize = $prob->getdim(0);
     my $ysize = $prob->getdim(1);
@@ -82,11 +83,22 @@ sub toICM{
     
     #get back to scores
     my $ICM = $flat * &sreLOG2($flat/$nul_model);
+
     #normalize to column-height
-    $ICM = $flat * $ICM->xchg(0, 1)->sumover();
-    
+    if ($height_logodds) {
+         #new style, which splits the information content height according to log odds
+         my $odds =  &sreLOG2($flat/$nul_model);
+         $odds    =  $odds->setbadif( $odds <= 0);  # only include entries with positive log-odds
+         $odds    =  $odds / $odds->xchg(0, 1)->sumover();
+         $ICM     =  $odds * $ICM->xchg(0, 1)->sumover();
+    } else {
+         #original style, which splits the information content height according to emission probability
+         $ICM     = $flat * $ICM->xchg(0, 1)->sumover();
+    }
+ 
     return $ICM;
 }
+
 
 #calculate the probabilities of entering a state (results in column-width of the logo)
 sub toHPM{
