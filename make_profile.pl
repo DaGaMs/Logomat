@@ -6,7 +6,7 @@ use HMM::Profile;
 use Data::Printer;
 
 my $file = shift;
-my $height_logodds = shift || 0;
+my $height_logodds = shift || 0; #default is to retain the old way of spliting column heights. Non-zero value sets this to use log odds.
 
 my $logo = HMM::Profile->new( -hmmerfile => $file ) or 
    die "Failed in making HMM logo from $file!\n";
