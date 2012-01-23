@@ -165,7 +165,7 @@ sub _raw_data {
     return {"width" => $width, "ICM" => $ICM, "maxIC" => $maxInfContent, "HPM" => $HPM};
 }
 
-sub flat {
+sub flatten {
     my $self = shift;
     my $height_logodds = shift || 0;
     my $data = $self->_raw_data($height_logodds);

@@ -42,6 +42,6 @@ $logo->draw_logo(
     -height_logodds => $height_logodds
   )  or die "Error writing $outfile!\n";
 
-my $data = $logo->flat($height_logodds);
+my $data = $logo->flatten($height_logodds);
 #print STDOUT p( $data);
 print STDOUT "Finished drawing Logo...\n";
