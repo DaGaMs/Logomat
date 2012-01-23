@@ -37,6 +37,7 @@ a graphical representation of the alignment. It is an extension of the HMM Logo 
 package HMM::Alignment;
 
 use strict;
+use warnings;
 use vars '@ISA'; #inheritance
 use PDL::LiteF;
 use Imager ':handy';

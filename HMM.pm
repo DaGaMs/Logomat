@@ -26,6 +26,7 @@ it: L<PDL>.
 package HMM;
 
 use strict;
+use warnings;
 use PDL::LiteF;
 
 our $VERSION = '0.81';

@@ -480,12 +480,11 @@ sub draw_logo {
         #get all the values for one column from the matrix
         my @infValues = list $ICM->slice($k);
 
-
         my $l=0;
 
         #fill infContent-Hash with Values
         foreach my $key (@alphabet){
-            unless(($infValues[$l]*$yStep)<1){ # if the character would print lower than 1 pixel, discard it
+            if( $infValues[$l] !~ /^BAD$/ && ($infValues[$l] * $yStep) > 1){ # if the character would print lower than 1 pixel, discard it
                 $infContent{$key} = sprintf('%.16f', $infValues[$l]);
             }
             ++$l; # this is the index of the information-content of the next character in the infValues vector
