@@ -34,6 +34,7 @@ HMM::Profile has the ability to draw a Logo from a HMMer file by calling the dra
 =cut
 
 use strict;
+use warnings;
 use vars '@ISA'; #inheritance
 use LWP::UserAgent;
 use HMM;
@@ -74,9 +75,9 @@ sub new {
     my ($class, %args) = @_;
     my $self = {};
     bless ($self, ref($class) || $class);
-    
+
     my $file;
-    
+
     if($args{-hmmerfile} and ref($args{-hmmerfile}) eq 'Fh' or ref($args{-hmmerfile}) eq 'GLOB' or ref($args{-hmmerfile}) eq 'IO::File'){
         my $fh = $args{-hmmerfile};
         undef $/;
@@ -92,11 +93,11 @@ sub new {
     }
     elsif($args{-pfamid}){
         use LWP::UserAgent;
-        
+
         # Create a user agent object
         my $ua = LWP::UserAgent->new();
         $ua->agent('HMM.pm/'.$HMM::VERSION);
-        
+
         # Pass request to the user agent and get a response back
         my $res = $ua->get('http://pfam.sanger.ac.uk/family/hmm?entry='.$args{-pfamid}.'&mode=ls');
 
@@ -144,13 +145,13 @@ sub new {
 }
 
 sub _raw_data {
-    my $self = shift;    
+    my $self = shift;
     my $height_logodds = shift;
-    #initialize the most important variables first    
+    #initialize the most important variables first
 
     my $ICM = toICM($self->emissions, $self->nullEmissions, $height_logodds);
     my $maxInfContent = max($ICM->xchg(0,1)->sumover());
-    
+
     #Width
     my $HPM = toHPM($self->startTransitions, $self->transitions); # calculate Hitting Prob.
     my $motifSize = $ICM->getdim(0);
@@ -158,9 +159,9 @@ sub _raw_data {
     my $width = zeroes($motifSize);
     $width->slice("0:".($motifSize-2).":2") .= $HPM->slice(':,0');
     $width->slice("1:".($motifSize-1).":2") .= ($HPM->slice(':,1')/$self->{'transitions'}->slice(':,3'))->badmask(0); #scale Insert-width by estimated retention period
-   
 
- 
+
+
     return {"width" => $width, "ICM" => $ICM, "maxIC" => $maxInfContent, "HPM" => $HPM};
 }
 
@@ -168,13 +169,13 @@ sub flat {
     my $self = shift;
     my $height_logodds = shift || 0;
     my $data = $self->_raw_data($height_logodds);
-    
-    
+
+
     my $ICM = $data->{ICM};
     my $maxInfContent = $data->{maxIC};
     my $HPM = $data->{HPM};
     my $width = $data->{width};
-    
+
     my @tmp;
     # convert to flat arrays
     for (my $i=0; $i<$ICM->getdim(0); $i++) {
@@ -187,10 +188,10 @@ sub flat {
         $tmp[$i] = [$HPM->slice("$i,:")->list];
     }
     $HPM = \@tmp;
-    
-    return {"width" =>  [ $width->list ], 
-            "ICM" => $ICM, 
-            "maxIC" => $maxInfContent, 
+
+    return {"width" =>  [ $width->list ],
+            "ICM" => $ICM,
+            "maxIC" => $maxInfContent,
             "HPM" => $HPM
     };
 }
@@ -201,7 +202,7 @@ sub flat {
  Function   : draw a logo from the represented HMM
  Returns    : true, if Image written properly, else false
  Args       :
- 
+
     -file,           # name of the output file; should end in .png
     -graph_title,    # title; none if empty
     -x_title,        # x-axis descritption; none if empty
@@ -246,20 +247,20 @@ sub draw_logo {
     = @args{qw(-xsize -ysize -x_title -y_title -graph_title -startpos -endpos -greyscale -regular_font -bold_font -axis_font_size -title_font_size -height_logodds)};
 
     my $data = $self->_raw_data($height_logodds);
-    #initialize the most important variables first    
+    #initialize the most important variables first
     my $ICM = $data->{ICM};
 
     my $maxInfContent = $data->{maxIC};
     my $HPM = $data->{HPM}; # calculate Hitting Prob.
     my $width = $data->{width};
-    
+
     my $motifSize = $ICM->getdim(0);
     my @alphabet = @{$self->alphabet};
-  
+
     if ($endpos < 0 ) {
        $endpos = $motifSize;
-    }  
-   
+    }
+
 
     #cut out the part of the profile that should be drawn - HPM first
     my $HPV = ones($motifSize);
@@ -278,19 +279,19 @@ sub draw_logo {
     if($startpos>$endpos){
         die("Start position larger than end position!\n");
     }
-    
+
     #cut out the part of the profile that should be drawn - Then the vectors
     $ICM = $ICM->slice("$startpos:".($endpos-1));
     $width = $width->slice("$startpos:".($endpos-1));
     $HPV = $HPV->slice("$startpos:".($endpos-1));
-    
+
     #Imager-Objects
     my $black=NC(0,0,0);
     my $white=NC(255,255,255);
     #fill the bars for insert states with either a solid color or slashes
     my $hpFill = $greyscale?(Imager::Fill->new(hatch=>'dots16', fg=>$black, bg=>$white)):(Imager::Fill->new(solid => NC('#FF6666')));
     my $contribFill=$greyscale?(Imager::Fill->new(hatch=>'dots4', fg=>$black, bg=>$white)):(Imager::Fill->new(solid => NC('#FFCCCC')));
-    
+
     #draw letters either with different colors or with 4 shades of grey
     my %letterColors;
     if($greyscale){
@@ -359,8 +360,8 @@ sub draw_logo {
                              );
         }
     }
-   
- 
+
+
     if ($args{'-letter_colours'} && ref($args{'-letter_colours'}) eq "HASH")
     {
         %letterColors = ();
@@ -369,25 +370,25 @@ sub draw_logo {
             $letterColors{$key} = NC($args{'-letter_colours'}->{$key})
         }
     }
-    
+
     my $normFont=NF(file=>"$regular_font", type=>'ft2') or die "Couldn't create font: $Imager::ERRSTR\n";
     my $titleFont=NF(file=>"$bold_font", type=>'ft2') or die "Couldn't create font: $Imager::ERRSTR\n";
     my $vertFont=NF(file=>"$regular_font", type=>'ft2') or die "Couldn't create font: $Imager::ERRSTR\n";
 
     #make label vertical (transformation by rotation-matrix!)
-    $vertFont->transform(matrix=>[ 0, -1, 0, 
+    $vertFont->transform(matrix=>[ 0, -1, 0,
                                   1, 0, 0]);
 
     #make new image, fill white
     my $i=Imager->new(xsize=>$xsize, ysize=>$ysize, channels=>($greyscale?1:4)); # destination image
     $i->box(filled=>1,color=>$white);                     # fill with background color
-                                                        # draw shadow just to right and below 
+                                                        # draw shadow just to right and below
                                                         # where log will be drawn
 
     #draw axis-descriptions and title
     $i->string(font=>$vertFont,
                string=>$yAxis,
-               x=>18, 
+               x=>18,
                y=>0.5*$ysize + 0.5*($vertFont->bounding_box(string=>$yAxis, size => $axis_font_size))[2],
                size=>$axis_font_size,
                color=>$black,
@@ -395,7 +396,7 @@ sub draw_logo {
 
     $i->string(font=>$normFont,
                string=>$xAxis,
-               x    =>  0.5*$xsize - 0.5*($normFont->bounding_box(string=>$xAxis, size => $axis_font_size))[2], 
+               x    =>  0.5*$xsize - 0.5*($normFont->bounding_box(string=>$xAxis, size => $axis_font_size))[2],
                y    =>  $ysize-7,
                size =>  $axis_font_size,
                color    =>  $black,
@@ -403,7 +404,7 @@ sub draw_logo {
 
     $i->string(font=>$titleFont,
                string=>$title,
-               x    =>  $xsize - ($titleFont->bounding_box(string=>$title, size => $title_font_size))[2]-10, 
+               x    =>  $xsize - ($titleFont->bounding_box(string=>$title, size => $title_font_size))[2]-10,
                y    =>  21,
                size =>   $title_font_size,
                color=>$black,
@@ -414,32 +415,32 @@ sub draw_logo {
     my $rightMargin = $xsize - 24;
     my $lowerMargin = $xAxis?($ysize-($normFont->bounding_box(string=>$xAxis))[3]-($normFont->bounding_box(string=>$xAxis))[1]-25):($ysize-25);
     my $upperMargin = $title?(($titleFont->bounding_box(string=>$title))[3]-($titleFont->bounding_box(string=>$title))[1]+24):24;
-        
-    $i->line(color=>$black, 
+
+    $i->line(color=>$black,
              x1=> $leftMargin,
              x2=> $rightMargin,
              y1=> $lowerMargin,
              y2=> $lowerMargin);
 
-    $i->line(color=>$black, 
+    $i->line(color=>$black,
              x1=> $leftMargin,
              x2=> $leftMargin,
              y1=> $upperMargin,
              y2=> $lowerMargin);
-         
+
     #draw vertical tics and numbers
     my $yStep = ($lowerMargin-$upperMargin) / PDL::Math::ceil($maxInfContent);
- 
+
     for(my $k=0; $k<=PDL::Math::ceil($maxInfContent); ++$k){
         $i->line(color=>$black,
                 x1=>$leftMargin-3,
                 x2=>$leftMargin+3,
                 y1=>$lowerMargin - $k*$yStep,
                 y2=>$lowerMargin - $k*$yStep);
-    
+
         $i->string(font=>$normFont,
                    string=>"$k ",
-                   x=>$leftMargin - 11, 
+                   x=>$leftMargin - 11,
                    y=>$lowerMargin - $k*$yStep +4,
                    size=>10,
                    color=>$black,
@@ -447,14 +448,14 @@ sub draw_logo {
     }
 
     #create Logo
-    
+
     #calculate scaling-factor for given image-size
     my $scaleFactor = ($rightMargin - $leftMargin)/$width->sumover();
-    #scale width to target-width 
+    #scale width to target-width
     $width *= $scaleFactor;
-    #scale HP to target-width 
+    #scale HP to target-width
     $HPV *= $scaleFactor;
-    
+
     #print a Scale-Bar to show the relative sizes
     $i->box(color=>$black,
                 xmin=>$leftMargin,
@@ -471,9 +472,9 @@ sub draw_logo {
                 x2=>$leftMargin + $scaleFactor,
                 y1=>$upperMargin - 11,
                 y2=>$upperMargin - 17);
-    
+
     my $isMatch = 1;
-    
+
     for(my $k=0; $k<($endpos-$startpos); ++$k){
         my %infContent = ();
         #get all the values for one column from the matrix
@@ -481,7 +482,7 @@ sub draw_logo {
 
 
         my $l=0;
-    
+
         #fill infContent-Hash with Values
         foreach my $key (@alphabet){
             unless(($infValues[$l]*$yStep)<1){ # if the character would print lower than 1 pixel, discard it
@@ -489,13 +490,13 @@ sub draw_logo {
             }
             ++$l; # this is the index of the information-content of the next character in the infValues vector
         }
-        
+
         #define drawing order by descending infContent
         my @drawOrder = sort {$infContent{$a}<=>$infContent{$b}} keys(%infContent); # Sort the letters to be printed by decreasing inf-content
-    
+
         #reset the height to 0
         my $sumHeight = $lowerMargin;
-        
+
         unless($isMatch){
             #draw tick and number
 
@@ -506,7 +507,7 @@ sub draw_logo {
                     y2=>$lowerMargin + 3);
             $i->string(font=>$normFont,
                    string=>(($startpos + $k+1)/2).' ',
-                   x=>$leftMargin + $width->slice("0:$k")->sumover() - 0.5*$width->slice(($k-1).':'.$k)->sumover() - 0.5*(($normFont->bounding_box(string=>($startpos + $k+1)/2))[2]-($normFont->bounding_box(string=>($startpos + $k+1)/2))[0]), 
+                   x=>$leftMargin + $width->slice("0:$k")->sumover() - 0.5*$width->slice(($k-1).':'.$k)->sumover() - 0.5*(($normFont->bounding_box(string=>($startpos + $k+1)/2))[2]-($normFont->bounding_box(string=>($startpos + $k+1)/2))[0]),
                    y=>$lowerMargin + 13,
                    size=>10,
                    color=>$black,
@@ -553,7 +554,7 @@ sub draw_logo {
             }
             $isMatch = 0;
         }
-    }    
+    }
     $i->write(file=>$args{'-file'});
     return 1;
 }
@@ -571,7 +572,7 @@ sub draw_logo {
     -ysize          # Image heigth; default is 360
     -height_logodds  # by default, information content height is divided according to emission probabilities;
                      # if non-zero, heights will be based on log-odds scores (only positive scoring residues)
- 
+
 =cut
 
 sub print_logo_dimensions
@@ -631,8 +632,8 @@ sub print_logo_dimensions
         #define drawing order by descending infContent
         my @drawOrder = sort {$infContent{$a}<=>$infContent{$b}} keys(%infContent); # Sort the letters to be printed by decreasing inf-content
 
-        printf ( "%d: insert_widths:%.3f,%.3f ; res_width:%.3f ; res_heights:", 
-                 ($k+2) / 2 , 
+        printf ( "%d: insert_widths:%.3f,%.3f ; res_width:%.3f ; res_heights:",
+                 ($k+2) / 2 ,
                  ( $width->slice("0:".($k+1))->sumover()) - ( $width->slice("0:".($k))->sumover() ) ,
                  ($width->slice("0:".($k))->sumover() + $HPV->at($k+1)) - ( $width->slice("0:".($k))->sumover()),
                  $width->at($k,0) );
@@ -640,9 +641,9 @@ sub print_logo_dimensions
         foreach my $key (@drawOrder){
             if($infContent{$key} > 0 ){
 
-                printf ( "$key=%.3f,",           
-                         $infContent{$key}  * $yScale 
-                );    
+                printf ( "$key=%.3f,",
+                         $infContent{$key}  * $yScale
+                );
 
             }
         }
@@ -665,7 +666,7 @@ sub print_logo_dimensions
 sub toHMMer2
 {
     my $self = shift;
-    
+
     my $file = 'HMMER'.$self->version."\n";
     $file .= "NAME  ".$self->name."\n";
     $file .= "ACC   ".$self->accession."\n" if $self->accession;
@@ -696,7 +697,7 @@ sub toHMMer2
 #private Function; Parse a file in HMMer-Format
 sub _parseFile {
     my ($self, $file) = @_;
-    
+
     # Boolean variables for proper parsing of *.hmm
     my $in_model = 0;
     my $got_trans = 0;
@@ -709,8 +710,8 @@ sub _parseFile {
         elsif (/^LENG\s*(\S+)/) { $self->{'length'} = $1; }
         elsif (/^ALPH\s*(\S+)/) { ($1 eq 'Amino') ?( $self->{'alphabet'}=20 ):( $self->{'alphabet'}=4 ) }
         elsif (/^NSEQ\s*(\S+).*/) { $self->{'seqNumber'} = $1; }
-        elsif (/^XT\s*(.+)/) { 
-            $self->{'specialTransitions'} = HMM::Utilities::Ascii2Prob($1, 1); 
+        elsif (/^XT\s*(.+)/) {
+            $self->{'specialTransitions'} = HMM::Utilities::Ascii2Prob($1, 1);
             $self->{'specialTransitionScores'} = HMM::Utilities::Ascii2Score($1);
         }
         elsif (/^NULT\s+(\S.*)/) {
@@ -728,9 +729,9 @@ sub _parseFile {
         elsif (/^\/\//) {
             last;
         }
-        
+
         ############### start parsing the main-model ################
-        
+
         elsif (/^HMM\s+([\w\s]*)/) {
             $in_model = 1; #we saw the first line of main model
             $self->{'alphabet'} = [split(/\s+/, $1)];
@@ -740,7 +741,7 @@ sub _parseFile {
             $self->{'emissions'} = zeroes($self->{'length'}, scalar(@{$self->{'alphabet'}}), 2); #2 matrices holding the emission-prob. for M and I states
             $self->{'emissionScores'} = zeroes($self->{'length'}, scalar(@{$self->{'alphabet'}}), 2); #2 matrices holding the emission-scores for M and I states
         }
-        
+
         elsif (!$got_trans && $in_model && (/\w->\w/)) {
             $got_trans = 1; #The human readable line which is the transition names
         }
@@ -805,13 +806,13 @@ sub _parseFile3 {
         # There are a lot of new HMMER3 specific tags missing here
         #
     } while (defined $line and $line !~ /^HMM/);
-    
+
     unless ($self->length and (defined $self->name or defined $self->accession))
     {
         warn("Parse error before $line");
         return;
     }
-    
+
     if ($line =~ /^HMM\s+([\w\s]*)/)
     {
         $self->{'alphabet'} = [split(/\s+/, $1)];
@@ -862,7 +863,7 @@ sub _parseFile3 {
         warn("HMM is badly formatted");
         return;
     }
-    
+
     # Now go through the model section and parse each state, consisting of 3 lines ()
     my $substate = 0;
     my $stateno;
@@ -891,7 +892,7 @@ sub _parseFile3 {
             $self->{state2column}[$stateno] = $map unless $map eq '-';
             $self->{consensus} .= $cs unless $cs eq '-';
             $self->{reference} .= $rf unless $rf eq '-';
-            
+
             $self->{'emissions'}->slice("$stateno,:,0") .= HMM::Utilities3::Ascii2Prob($ascii)->transpose();
             $self->{'emissionScores'}->slice("$stateno,:,0") .= HMM::Utilities3::Ascii2Log($ascii)->transpose();
             $substate++;
@@ -920,7 +921,7 @@ sub _parseFile3 {
         }
         $line = shift @lines;
     }
-    
+
     #
     # Check that the length is correct
     #
@@ -933,7 +934,7 @@ sub _parseFile3 {
 }
 
 return 1;
-         
+
 =head1 BUGS
 
 This is an alpha release; if you witness malfunction please contact the author!
