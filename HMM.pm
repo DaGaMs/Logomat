@@ -5,9 +5,9 @@ HMM - representation of hidden markov moddels for computational biology
 =head1 SYNOPSIS
 
   use HMM;
-    
+
   my $hmm = HMM->new(-hmmerfile=>$file) || die("Couldn't open $file!\n"); #try to create a new hmm-object from the file
-    
+
   print $hmm->name(); #output the name of the model
   print $hmm->transitions(); #show the matrix of transition probabilities
 
@@ -100,7 +100,7 @@ sub name : lvalue {
     $self->{'modelName'};
 }
 
-    
+
 =head2 alphabet()
 
  Usage      : my @alphabet = $pHMM->alphabet()
@@ -113,7 +113,7 @@ sub alphabet : lvalue {
     $self->{'alphabet'};
 }
 
-    
+
 =head2 length()
 
  Usage      : my $length = $pHMM->length()
