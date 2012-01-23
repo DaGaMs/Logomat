@@ -632,18 +632,16 @@ sub print_logo_dimensions
         #define drawing order by descending infContent
         my @drawOrder = sort {$infContent{$a}<=>$infContent{$b}} keys(%infContent); # Sort the letters to be printed by decreasing inf-content
 
-        printf ( "%d: insert_widths:%.3f,%.3f ; res_width:%.3f ; res_heights:",
+        printf "%d: insert_widths:%.3f,%.3f ; res_width:%.3f ; res_heights:",
                  ($k+2) / 2 ,
                  ( $width->slice("0:".($k+1))->sumover()) - ( $width->slice("0:".($k))->sumover() ) ,
                  ($width->slice("0:".($k))->sumover() + $HPV->at($k+1)) - ( $width->slice("0:".($k))->sumover()),
-                 $width->at($k,0) );
+                 $width->at($k,0);
 
         foreach my $key (@drawOrder){
             if($infContent{$key} > 0 ){
 
-                printf ( "$key=%.3f,",
-                         $infContent{$key}  * $yScale
-                );
+                printf "$key=%.3f,", $infContent{$key}  * $yScale;
 
             }
         }
