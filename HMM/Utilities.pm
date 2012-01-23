@@ -65,7 +65,7 @@ sub Score2Ascii {    #Converts Score-vectors to single line, space separated str
 sub sreLOG2 {        #Log base 2 as used in HMMer
     my $x = shift;
     my $mask = shift || 0;
-    return (log($x)*$LBASE2)->badmask($mask); 
+    return (log($x)*$LBASE2)->badmask($mask);
 }
 
 #create an information content matrix from the emission-probabilities
@@ -73,14 +73,14 @@ sub toICM{
     my $prob = shift;
     my $nul_model = shift;
     my $height_logodds = shift; # boolean.  If 0, then use emission probability for height (which was the default) ,  TJW
-    
+
     my $xsize = $prob->getdim(0);
     my $ysize = $prob->getdim(1);
     my $flat = zeroes($xsize*2, $ysize);
-    
+
     $flat->slice('0:'.($xsize*2-2).':2,:') .= $prob->slice(':,:,0');
     $flat->slice('1:'.($xsize*2-1).':2,:') .= $prob->slice(':,:,1');
-    
+
     #get back to scores
     my $ICM = $flat * &sreLOG2($flat/$nul_model);
 
@@ -95,7 +95,7 @@ sub toICM{
          #original style, which splits the information content height according to emission probability
          $ICM     = $flat * $ICM->xchg(0, 1)->sumover();
     }
- 
+
     return $ICM;
 }
 
@@ -104,7 +104,7 @@ sub toICM{
 sub toHPM{
     my $startTransitions = shift;
     my $transitions = shift;
-    
+
     my $xSize = $transitions->getdim(0);
     my $width = zeroes($xSize, 3);
     if ($startTransitions->getdim(1) == 3)
@@ -144,7 +144,7 @@ use HMM::Utilities;
 
 =head1 DESCRIPTION
 
-This module contains helpfull methods for converting scores to probabilities and vice versa 
+This module contains helpfull methods for converting scores to probabilities and vice versa
 as well as creation of information content and hitting probability matrices.
 
 =head1 METHODS
@@ -162,7 +162,7 @@ as well as creation of information content and hitting probability matrices.
  Usage     : my $prob = Prob2Score($score, $nullModel)
  Function: convert score-piddles to probability-piddles
  Returns : a new piddle
- 
+
 =item Ascii2Prob($ascii, $nullModel)
 
  Usage     : my $prob = Ascii2Prob($ascii, $nullModel)
@@ -204,7 +204,7 @@ as well as creation of information content and hitting probability matrices.
  Usage     : my $HPM = toHPM($startTransitions, $transitions)
  Function: generate a new hitting-probability matrix
  Returns : a new piddle
- 
+
  =back
 
 =head1 BUGS
