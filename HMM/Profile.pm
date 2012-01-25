@@ -554,7 +554,19 @@ sub draw_logo {
             $isMatch = 0;
         }
     }
-    $i->write(file=>$args{'-file'});
+    if ($args{'-file'}) {
+        $i->write(type=>'png', file=>$args{'-file'});
+    }
+    elsif ($args{'-fh'}) {
+        $i->write(type=>'png', fh=>$args{'-file'});
+    }
+    elsif ($args{'-data'}) {
+        $i->write(type=>'png', data=>$args{'-data'});
+    }
+    else {
+        warn __PACKAGE__." WARN No data output handle passed!\n";
+        return;
+    }
     return 1;
 }
 
