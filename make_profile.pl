@@ -21,9 +21,6 @@ if (0==1) {
 $logo->print_logo_dimensions(
     -xsize          => $xsize,
     -ysize          => $ysize,
-    -x_title        => 'Relative Entropy',
-    -y_title        => 'Contribution',
-    -graph_title    => $graph_title,
     -greyscale      => $greyscale,
     -height_logodds => $height_logodds
   )  or die "Error writing $outfile!\n";
@@ -35,13 +32,13 @@ $logo->draw_logo(
     -file           => $outfile,
     -xsize          => $xsize,
     -ysize          => $ysize,
-    -x_title        => 'Relative Entropy',
-    -y_title        => 'Contribution',
+    -x_title        => 'Position',
+    -y_title        => 'Contribution (bits)',
     -graph_title    => $graph_title,
     -greyscale      => $greyscale,
     -height_logodds => $height_logodds
   )  or die "Error writing $outfile!\n";
 
-my $data = $logo->flat($height_logodds);
+#my $data = $logo->flat($height_logodds);
 #print STDOUT p( $data);
 print STDOUT "Finished drawing Logo...\n";
