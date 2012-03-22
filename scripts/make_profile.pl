@@ -17,14 +17,14 @@ my $ysize       = 500;
 my $xsize       = $logo->length() * 34;
 my $greyscale   = 0;
 
-if (0==1) {
+=for comment
 $logo->print_logo_dimensions(
     -xsize          => $xsize,
     -ysize          => $ysize,
     -greyscale      => $greyscale,
     -height_logodds => $height_logodds
   )  or die "Error writing $outfile!\n";
-}
+=cut
 
 #Now go and make the logos
 print STDOUT "Drawing Logo...\n";
@@ -39,6 +39,6 @@ $logo->draw_logo(
     -height_logodds => $height_logodds
   )  or die "Error writing $outfile!\n";
 
-#my $data = $logo->flat($height_logodds);
+#my $data = $logo->flatten($height_logodds);
 #print STDOUT p( $data);
 print STDOUT "Finished drawing Logo...\n";

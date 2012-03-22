@@ -12,7 +12,8 @@ WriteMakefile(
                           HTTP::Request   => '1.0',
                           HTTP::Response  => '1.0',
                           Test::Simple    => '0.86' },
-    'dist'      => {COMPRESS     => 'gzip -9f',
-                    SUFFIX       => '.gz', 
-                    DIST_DEFAULT => 'all tardist'}
+    'EXE_FILES'      => ['scripts/hmm2logo.pl', 'scripts/make_profile.pl'],
+    'dist'           => {COMPRESS     => 'gzip -9f',
+                         SUFFIX       => '.gz',
+                         DIST_DEFAULT => 'all tardist'}
 );

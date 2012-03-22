@@ -1,8 +1,9 @@
 package HMM::Utilities3;
-use vars qw(@ISA @EXPORTER @EXPORT_OK);
+use strict;
+use warnings;
 use Exporter;
-@ISA = qw(Exporter);
-@EXPORT = ();
+our @ISA = qw(Exporter);
+our @EXPORT = ();
 
 use PDL::LiteF;
 
