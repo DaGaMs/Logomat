@@ -882,12 +882,14 @@ sub _parseFile3 {
         # Match line
         if ($substate == 0)
         {
-            my ($s, $ascii, $map, $consensus, $rf, $cs);
+            my ($s, $ascii, $map, $consensus, $rf, $mm, $cs);
 
-            if ($self->version =~ /[abcd]$/) {
+            if ($self->version =~ /[abcd]$/) {  # hmm versions a..d or greater
                ($s, $ascii, $map, $rf, $cs)             = $line =~ /^\s*(\d+)\s+(.*)\s+(\S+)\s+(\S)\s+(\S)\s*$/;
-            } else {  # hmm version e or greater
+            } elsif ($self->version =~ /e$/) {  # hmm version e
                ($s, $ascii, $map, $consensus, $rf, $cs) = $line =~ /^\s*(\d+)\s+(.*)\s+(\S+)\s+(\S)\s+(\S)\s+(\S)\s*$/;
+            } else {  # hmm version f or greater
+               ($s, $ascii, $map, $consensus, $rf, $mm, $cs) = $line =~ /^\s*(\d+)\s+(.*)\s+(\S+)\s+(\S)\s+(\S)\s+(\S)\s+(\S)\s*$/;
             }
 
 
