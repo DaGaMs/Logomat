@@ -1,5 +1,8 @@
 #!/usr/bin/env perl
 
+use FindBin;                 # locate this script
+use lib "$FindBin::Bin/..";  # use the parent directory; this is for HMM::Profile, calling from some other directory
+
 use strict;
 use warnings;
 use HMM::Profile;
